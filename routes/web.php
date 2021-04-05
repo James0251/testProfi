@@ -57,3 +57,9 @@ Route::get('/open', 'User\IndexController')->name('open');
 // Переход на страницу /lock
 Route::get('/lock', 'User\IndexController@lock')->name('lock');
 
+
+// Карты
+Route::get('/mapOne', 'MapsController@mapOne')->name('mapOne');
+Route::get('/mapTwo', 'MapsController@mapTwo')->name('mapTwo');
+Route::get('/mapThree', 'MapsController@mapThree')->name('mapThree');
+
