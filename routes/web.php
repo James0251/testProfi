@@ -38,7 +38,17 @@ Route::get(
         'reset-password/token/{token}/email/{email}',
         'Auth\ResetPasswordController@form')->name('reset-form');
 // восстановление пароля
-Route::post('reset-password', 'Auth\ResetPasswordController@reset')->name('reset-password');
+Route::post('reset-password', 'Auth\ResetPasswordController@reset')
+    ->name('reset-password');
+// сообщение о необходимости проверки адреса почты
+Route::get('verify-message', 'Auth\VerifyEmailController@message')
+    ->name('verify-message');
+// подтверждение адреса почты нового пользователя
+Route::get('verify-email/token/{token}/id/{id}', 'Auth\VerifyEmailController@verify')
+    ->where('token', '[a-f0-9]{32}')
+    ->where('id', '[0-9]+')
+    ->name('verify-email');
+
 
 
 

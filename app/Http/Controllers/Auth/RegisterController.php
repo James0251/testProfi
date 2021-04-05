@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\User;
 use Hash;
+use Illuminate\Support\Facades\Mail;
 
 class RegisterController extends Controller {
 
@@ -28,16 +29,29 @@ class RegisterController extends Controller {
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
+            'password_confirmation' => 'required',
         ]);
 
-        User::create([
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
 
-        return redirect()
-            ->route('login')
-            ->with('success', 'Вы успешно зарегистрировались');
+        // ссылка для проверки адреса почты
+        $token = md5($user->email . $user->name);
+        $link = route('verify-email', ['token' => $token, 'id' => $user->id]);
+        Mail::send(
+            'email.verify-email',
+            ['link' => $link],
+            function($message) use ($request) {
+                $message->to($request->email);
+                $message->subject('Подтверждение адреса почты');
+            }
+        );
+
+        // необходимо подтвердить адрес почты
+        return redirect()->route('verify-message');
+        // return redirect()->route('login');
     }
 }
