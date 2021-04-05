@@ -31,9 +31,18 @@ class LoginController extends Controller {
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials, $request->has('remember'))) {
+            /*
+             * Адрес почты не подтвержден
+             */
+            if (is_null(Auth::user()->email_verified_at)) {
+                Auth::logout();
+                return redirect()
+                    ->route('verify-message')
+                    ->withErrors('Адрес почты не подтвержден');
+            }
             return redirect()
                 ->route('open')
-                ->with('success', 'Вы вошли в личный кабинет');
+                ->with('success', 'Вы вошли на главную страницу');
         }
 
         return redirect()
@@ -48,6 +57,6 @@ class LoginController extends Controller {
         Auth::logout();
         return redirect()
             ->route('login')
-            ->with('success', 'Вы вышли из личного кабинета');
+            ->with('success', 'Вы вышли из главной страницы');
     }
 }
